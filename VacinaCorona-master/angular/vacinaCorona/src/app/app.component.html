@@ -1,0 +1,483 @@
+<!-- Add icon library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="container mt-5" style="background: aliceblue">
+  <div class="row">
+    <div class="col text-sm-center">
+      <h2>Vacina do Corona Vírus</h2>
+    </div>
+  </div>
+  <ul class="nav nav-tabs">
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+         aria-expanded="false">Vacina</a>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#" (click)="definirEscopo(1)">Cadastrar</a>
+        <a class="dropdown-item" href="#" (click)="listarVacinas()">Listar</a>
+      </div>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+         aria-expanded="false">Pesquisadores</a>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#" (click)="definirEscopo(4)">Cadastrar</a>
+        <a class="dropdown-item" href="#" (click)="listarPesquisador()">Listar</a>
+      </div>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+         aria-expanded="false">Voluntários</a>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#" (click)="definirEscopo(7)">Cadastrar</a>
+        <a class="dropdown-item" href="#" (click)="listarVoluntarios()">Listar</a>
+      </div>
+    </li>
+  </ul>
+  <div *ngIf="this.sucesso" #alert class="alert alert-success alert-dismissible fade show" style="margin-top: 30px" role="alert">
+    <button type="button" class="close" aria-label="Close" (click)="closeAlert()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    Operação realizada com sucesso!
+  </div>
+  <div *ngIf="this.escopo == 1" class="row mt-5">
+    <div class="col">
+      <h1>Cadastrar Vacina</h1>
+      <form class="form-group" [formGroup]="this.formularioVacina">
+        <legend style="margin-top: 30px">Dados gerais:</legend>
+        <label>Nome</label>
+        <input type="text" class="form-control w-25" formControlName="nomeVacina" placeholder="Digite o nome da vacina">
+        <label>Estoque</label>
+        <input type="text" class="form-control w-25" formControlName="estoque"
+               placeholder="Digite a quantidade no estoque">
+      </form>
+      <form class="form-group" [formGroup]="this.formularioFases">
+        <legend style="margin-top: 30px">Informações sobre as fases:</legend>
+        <label>Fase 1</label>
+        <input type="text" class="form-control w-25" formControlName="fase1"
+               placeholder="Não iniciada - Em teste - Aprovado">
+        <label>Fase 2</label>
+        <input type="text" class="form-control w-25" formControlName="fase2"
+               placeholder="Não iniciada - Em teste - Aprovado">
+        <label>Fase 3</label>
+        <input type="text" class="form-control w-25" formControlName="fase3"
+               placeholder="Não iniciada - Em teste - Aprovado">
+        <label>Fase 4</label>
+        <input type="text" class="form-control w-25" formControlName="fase4"
+               placeholder="Não iniciada - Em teste - Aprovado">
+      </form>
+
+      <legend style="margin-top: 30px">Efeitos Colaterais:</legend>
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">Nome</th>
+          <th scope="col">Raridade</th>
+          <th scope="col">Ações</th>
+        </tr>
+        </thead>
+        <tbody >
+        <tr *ngFor="let vac of this.listaEfeitosAdicionados">
+          <td>{{vac.descricao}}</td>
+          <td>
+            <span *ngIf="vac.comum == 'SIM'">Comum</span>
+            <span *ngIf="vac.incomum == 'SIM'">Incomum</span>
+            <span *ngIf="vac.raro == 'SIM'">Raro</span>
+          </td>
+          <td>
+            <button class="btn btn-danger btn-sm" (click)="excluirEfeito(vac)" style="margin-left: 5px"><i class="fa fa-trash"> </i></button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <form class="form-group" [formGroup]="this.formularioEfeitosColaterais">
+        <label>Descrição</label>
+        <input type="text" class="form-control w-25" formControlName="descricao"
+               placeholder="Digite o efeito colateral">
+        <label>Raridade</label>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" formControlName="tipo" value="C" checked>
+          <label class="form-check-label">
+            Comum
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" formControlName="tipo" value="I">
+          <label class="form-check-label">
+            Incomum
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" formControlName="tipo" value="R">
+          <label class="form-check-label">
+            Raro
+          </label>
+        </div>
+        <button (click)="adicionarEfeitos()" type="button" class="btn btn-success" style="margin-top: 10px"><i class="fa fa-plus"></i>  Adicionar</button>
+      </form>
+
+      <form class="form-group" [formGroup]="this.formularioGoverno">
+        <legend style="margin-top: 30px">Governo responsável:</legend>
+        <label>Nome do governo</label>
+        <input type="text" class="form-control w-25" formControlName="nome" placeholder="Nome do governo">
+      </form>
+
+      <form class="form-group" [formGroup]="this.formularioEmpresa">
+        <legend style="margin-top: 30px">Empresa responsável:</legend>
+        <label>Nome da empresa</label>
+        <input type="text" class="form-control w-25" formControlName="nomeEmpresa" placeholder="Nome da empresa">
+      </form>
+
+
+      <form class="form-group" [formGroup]="this.formularioPaises">
+        <legend style="margin-top: 30px">Países que serão testados:</legend>
+        <table class="table">
+          <thead>
+          <tr>
+            <th scope="col">Nome</th>
+            <th scope="col">Nº Participantes</th>
+            <th scope="col">Ações</th>
+          </tr>
+          </thead>
+          <tbody >
+          <tr *ngFor="let vac of this.listaPaisesSelecionados">
+            <td>{{vac.nome}}</td>
+            <td>{{vac.numParticipantes}}</td>
+            <td>
+              <button class="btn btn-danger btn-sm" (click)="excluirPais(vac)" style="margin-left: 5px"><i class="fa fa-trash"> </i></button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <label>Nome</label>
+        <input type="text" class="form-control w-25" formControlName="nome" placeholder="Nome do país">
+        <label>Número de participantes</label>
+        <input type="text" class="form-control w-25" formControlName="numParticipantes"
+               placeholder="Número de participantes">
+        <button (click)="adicionarPaises()" type="button" class="btn btn-success" style="margin-top: 10px"><i class="fa fa-plus"></i>  Adicionar</button>
+      </form>
+
+
+      <div style="margin-bottom: 50px; margin-top: 50px">
+        <button type="submit" class="btn btn-primary" (click)="salvarVacina()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div *ngIf="this.escopo == 2" class="row mt-5">
+    <div class="col">
+      <h1>Lista de Vacinas</h1>
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">Nome</th>
+          <th scope="col">Estoque</th>
+          <th scope="col">Governo</th>
+          <th scope="col">Empresa</th>
+          <th scope="col">Ações</th>
+        </tr>
+        </thead>
+        <tbody >
+        <tr *ngFor="let vac of this.listaVacinasCadastradas">
+          <th scope="row">{{vac.nomeVacina}}</th>
+          <td>{{vac.estoque}}</td>
+          <td>{{vac.governo.nome}}</td>
+          <td>{{vac.empresa.nomeEmpresa}}</td>
+          <td>
+            <button class="btn btn-primary btn-sm" (click)="editarVacina(vac)"><i class="fa fa-edit"></i></button>
+            <button class="btn btn-danger btn-sm" (click)="excluirVacina(vac.id)" style="margin-left: 5px"><i class="fa fa-trash"> </i></button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <div *ngIf="this.escopo == 3" class="row mt-5">
+    <div class="col">
+      <h1>Alterar Vacina</h1>
+      <form class="form-group" [formGroup]="this.formularioVacina">
+        <legend style="margin-top: 30px">Dados gerais:</legend>
+        <label>Nome</label>
+        <input type="text" class="form-control w-25" formControlName="nomeVacina" placeholder="Digite o nome da vacina">
+        <label>Estoque</label>
+        <input type="text" class="form-control w-25" formControlName="estoque"
+               placeholder="Digite a quantidade no estoque">
+      </form>
+      <form class="form-group" [formGroup]="this.formularioFases">
+        <legend style="margin-top: 30px">Informações sobre as fases:</legend>
+        <label>Fase 1</label>
+        <input type="text" class="form-control w-25" formControlName="fase1"
+               placeholder="Não iniciada - Em teste - Aprovado">
+        <label>Fase 2</label>
+        <input type="text" class="form-control w-25" formControlName="fase2"
+               placeholder="Não iniciada - Em teste - Aprovado">
+        <label>Fase 3</label>
+        <input type="text" class="form-control w-25" formControlName="fase3"
+               placeholder="Não iniciada - Em teste - Aprovado">
+        <label>Fase 4</label>
+        <input type="text" class="form-control w-25" formControlName="fase4"
+               placeholder="Não iniciada - Em teste - Aprovado">
+      </form>
+
+      <legend style="margin-top: 30px">Efeitos Colaterais:</legend>
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">Nome</th>
+          <th scope="col">Raridade</th>
+          <th scope="col">Ações</th>
+        </tr>
+        </thead>
+        <tbody >
+        <tr *ngFor="let vac of this.listaEfeitosAdicionados">
+          <td>{{vac.descricao}}</td>
+          <td>
+            <span *ngIf="vac.comum == 'SIM'">Comum</span>
+            <span *ngIf="vac.incomum == 'SIM'">Incomum</span>
+            <span *ngIf="vac.raro == 'SIM'">Raro</span>
+          </td>
+          <td>
+            <button class="btn btn-danger btn-sm" (click)="excluirEfeito(vac)" style="margin-left: 5px"><i class="fa fa-trash"> </i></button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <form class="form-group" [formGroup]="this.formularioEfeitosColaterais">
+        <label>Descrição</label>
+        <input type="text" class="form-control w-25" formControlName="descricao"
+               placeholder="Não iniciada - Em teste - Aprovado">
+        <label>Raridade</label>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" formControlName="tipo" value="C" checked>
+          <label class="form-check-label">
+            Comum
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" formControlName="tipo" value="I">
+          <label class="form-check-label">
+            Imcomum
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" formControlName="tipo" value="R">
+          <label class="form-check-label">
+            Raro
+          </label>
+        </div>
+        <button (click)="adicionarEfeitos()" type="button" class="btn btn-success" style="margin-top: 10px"><i class="fa fa-plus"></i>  Adicionar</button>
+      </form>
+
+      <form class="form-group" [formGroup]="this.formularioGoverno">
+        <legend style="margin-top: 30px">Governo responsável:</legend>
+        <label>Nome do governo</label>
+        <input type="text" class="form-control w-25" formControlName="nome" placeholder="Nome do país">
+      </form>
+
+      <form class="form-group" [formGroup]="this.formularioEmpresa">
+        <legend style="margin-top: 30px">Empresa responsável:</legend>
+        <label>Nome da empresa</label>
+        <input type="text" class="form-control w-25" formControlName="nomeEmpresa" placeholder="Nome do país">
+      </form>
+
+
+      <legend style="margin-top: 30px">Países que serão testados:</legend>
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">Nome</th>
+          <th scope="col">Nº Participantes</th>
+          <th scope="col">Ações</th>
+        </tr>
+        </thead>
+        <tbody >
+        <tr *ngFor="let vac of this.listaPaisesSelecionados">
+          <td>{{vac.nome}}</td>
+          <td>{{vac.numParticipantes}}</td>
+          <td>
+            <button class="btn btn-danger btn-sm" (click)="excluirPais(vac)" style="margin-left: 5px"><i class="fa fa-trash"> </i></button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <form class="form-group" [formGroup]="this.formularioPaises">
+        <label>Nome</label>
+        <input type="text" class="form-control w-25" formControlName="nome" placeholder="Nome do país">
+        <label>Número de participantes</label>
+        <input type="text" class="form-control w-25" formControlName="numParticipantes"
+               placeholder="Número de participantes">
+        <button (click)="adicionarPaises()" type="button" class="btn btn-success" style="margin-top: 10px"><i class="fa fa-plus"></i>  Adicionar</button>
+      </form>
+
+
+      <div style="margin-bottom: 50px; margin-top: 50px">
+        <button type="submit" class="btn btn-primary" (click)="alterarVacina()">Alterar</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="this.escopo == 4" class="row mt-5">
+    <div class="col">
+      <h1>Cadastrar Pesquisador</h1>
+      <form class="form-group" [formGroup]="this.formularioPesquisador">
+        <legend style="margin-top: 30px">Dados gerais:</legend>
+        <label>Nome</label>
+        <input type="text" class="form-control w-25" formControlName="nome" placeholder="Digite o nome">
+        <label>Idade</label>
+        <input type="text" class="form-control w-25" formControlName="idade" placeholder="Digite a idade">
+        <label>Email</label>
+        <input type="text" class="form-control w-25" formControlName="email" placeholder="Digite o email">
+        <label>Cargo</label>
+        <input type="text" class="form-control w-25" formControlName="cargo" placeholder="Digite o cargo">
+      </form>
+      <div>
+        <label>Vacina de pesquisa</label>
+        <select class="form-control w-25" [(ngModel)]="this.vacina">
+          <option [ngValue]="vac" *ngFor="let vac of this.listaVacinasCombo" >{{vac.nomeVacina}}</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 50px; margin-top: 50px">
+        <button type="submit" class="btn btn-primary" (click)="salvarPesquisador()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="this.escopo == 5" class="row mt-5">
+    <div class="col">
+      <h1>Lista de Pesquisadores</h1>
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">Nome</th>
+          <th scope="col">Idade</th>
+          <th scope="col">Email</th>
+          <th scope="col">Cargo</th>
+          <th scope="col">Vacina de pesquisa</th>
+        </tr>
+        </thead>
+        <tbody >
+        <tr *ngFor="let pes of this.listaPesquidores">
+          <td>{{pes.nome}}</td>
+          <td>{{pes.idade}}</td>
+          <td>{{pes.email}}</td>
+          <td>{{pes.cargo}}</td>
+          <td>{{pes.vacina.nomeVacina}}</td>
+          <td>
+            <button class="btn btn-primary btn-sm" (click)="editarPesquisador(pes)"><i class="fa fa-edit"></i></button>
+            <button class="btn btn-danger btn-sm" (click)="excluirPesquisador(pes.id)" style="margin-left: 5px"><i class="fa fa-trash"> </i></button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="this.escopo == 6" class="row mt-5">
+    <div class="col">
+      <h1>Alterar Pesquisador</h1>
+      <form class="form-group" [formGroup]="this.formularioPesquisador">
+        <legend style="margin-top: 30px">Dados gerais:</legend>
+        <label>Nome</label>
+        <input type="text" class="form-control w-25" formControlName="nome" placeholder="Digite o nome">
+        <label>Idade</label>
+        <input type="text" class="form-control w-25" formControlName="idade" placeholder="Digite a idade">
+        <label>Email</label>
+        <input type="text" class="form-control w-25" formControlName="email" placeholder="Digite o email">
+        <label>Cargo</label>
+        <input type="text" class="form-control w-25" formControlName="cargo" placeholder="Digite o cargo">
+      </form>
+      <div>
+        <label>Vacina de pesquisa</label>
+        <select class="form-control w-25" [(ngModel)]="this.vacina">
+          <option [ngValue]="vac" *ngFor="let vac of this.listaVacinasCombo" >{{vac.nomeVacina}}</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 50px; margin-top: 50px">
+        <button type="submit" class="btn btn-primary" (click)="alterarPesquisador()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="this.escopo == 7" class="row mt-5">
+    <div class="col">
+      <h1>Cadastrar Voluntário</h1>
+      <form class="form-group" [formGroup]="this.formularioVoluntario">
+        <legend style="margin-top: 30px">Dados gerais:</legend>
+        <label>Nome</label>
+        <input type="text" class="form-control w-25" formControlName="nome" placeholder="Digite o nome">
+        <label>Idade</label>
+        <input type="text" class="form-control w-25" formControlName="idade" placeholder="Digite a idade">
+        <label>Comorbidade</label>
+        <input type="text" class="form-control w-25" formControlName="comorbidades" placeholder="Digite a comorbidade">
+      </form>
+      <div>
+        <label>Pais de teste</label>
+        <select class="form-control w-25" [(ngModel)]="this.paisSelecionado">
+          <option [ngValue]="pais" *ngFor="let pais of this.listaPaises" >{{pais.nome}}</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 50px; margin-top: 50px">
+        <button type="submit" class="btn btn-primary" (click)="salvarVoluntario()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="this.escopo == 8" class="row mt-5">
+    <div class="col">
+      <h1>Lista de Voluntarios</h1>
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">Nome</th>
+          <th scope="col">Idade</th>
+          <th scope="col">Comorbidades</th>
+          <th scope="col">Pais de teste</th>
+        </tr>
+        </thead>
+        <tbody >
+        <tr *ngFor="let vol of this.listaVoluntarios">
+          <td>{{vol.nome}}</td>
+          <td>{{vol.idade}}</td>
+          <td>{{vol.comorbidades}}</td>
+          <td>{{vol.paisTeste.nome}}</td>
+          <td>
+            <button class="btn btn-primary btn-sm" (click)="editarVoluntarios(vol)"><i class="fa fa-edit"></i></button>
+            <button class="btn btn-danger btn-sm" (click)="excluirVoluntario(vol.idVoluntario)" style="margin-left: 5px"><i class="fa fa-trash"> </i></button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="this.escopo == 9" class="row mt-5">
+    <div class="col">
+      <h1>Alterar Voluntário</h1>
+      <form class="form-group" [formGroup]="this.formularioVoluntario">
+        <legend style="margin-top: 30px">Dados gerais:</legend>
+        <label>Nome</label>
+        <input type="text" class="form-control w-25" formControlName="nome" placeholder="Digite o nome">
+        <label>Idade</label>
+        <input type="text" class="form-control w-25" formControlName="idade" placeholder="Digite a idade">
+        <label>Comorbidade</label>
+        <input type="text" class="form-control w-25" formControlName="comorbidades" placeholder="Digite o email">
+      </form>
+      <div>
+        <label>Pais de teste</label>
+        <select class="form-control w-25" [(ngModel)]="this.paisSelecionado">
+          <option [ngValue]="pais" *ngFor="let pais of this.listaPaises" >{{pais.nome}}</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 50px; margin-top: 50px">
+        <button type="submit" class="btn btn-primary" (click)="alterarVoluntario()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+</div>
